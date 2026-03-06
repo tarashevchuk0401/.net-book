@@ -25,7 +25,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.List\u00601[[FirstApi.Models.Book, FirstApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.List\u00601[[FirstApi.DTOs.Book.BookDto, FirstApi, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -45,7 +45,7 @@
     "Parameters": [
       {
         "Name": "newBook",
-        "Type": "FirstApi.Models.Book",
+        "Type": "FirstApi.DTOs.Book.CreateBookDto",
         "IsRequired": true
       }
     ],
@@ -77,7 +77,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "FirstApi.Models.Book",
+        "Type": "FirstApi.DTOs.Book.BookDto",
         "MediaTypes": [
           "text/plain",
           "application/json",

@@ -1,4 +1,5 @@
 ﻿using FirstApi.Data;
+using FirstApi.DTOs.Book;
 using FirstApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,14 +20,14 @@ namespace FirstApi.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<List<Book>>> GetBooks(
+		public async Task<ActionResult<List<BookDto>>> GetBooks(
 			[FromQuery] int page = 1,
 			[FromQuery] int pageSize = 10,
 			[FromQuery] string? searchTerm = null
 			)
 		{
 			var toSkip = (page - 1) * pageSize;
-			var query = _context.Books.AsQueryable();
+			var query = _context.Books.Include(b => b.Author).AsQueryable();
 
 			if (!string.IsNullOrWhiteSpace(searchTerm))
 			{
@@ -38,17 +39,34 @@ namespace FirstApi.Controllers
 				.OrderBy(b => b.Id)
 				.Skip(toSkip)
 				.Take(pageSize)
+				.Select(b => new BookDto
+					{
+						Id = b.Id,
+						Title = b.Title,
+						YearPublished = b.YearPublished,
+						AuthorName = b.Author!.FullName
+					})
 				.ToListAsync();
 
 			return Ok(books);
 		}
 
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Book>> GetBookById(int id)
+		public async Task<ActionResult<BookDto>> GetBookById(int id)
 		{
-			var book = await _context.Books.FindAsync(id);
-			if (book == null)
-				return NotFound("There are no book...");
+			var book = await _context.Books
+				.Include(b => b.Author)
+				.Where(b => b.Id == id)
+				.Select(b => new BookDto
+					{
+						Id = b.Id,
+						Title = b.Title,
+						YearPublished = b.YearPublished,
+						AuthorName = b.Author!.FullName,
+					})
+				.FirstOrDefaultAsync();
+
+			if (book == null) return NotFound("There are no book...");
 
 			return Ok(book);
 		}
@@ -57,22 +75,46 @@ namespace FirstApi.Controllers
 		public async Task<ActionResult<List<Book>>> GetBooksByYear(int year)
 		{
 		
-			var book = await  _context.Books.Where(book => book.YearPublished == year).ToListAsync();
+			var book = await  _context.Books
+				.Include (b => b.Author)
+				.Where(book => book.YearPublished == year)
+				.Select(b => new BookDto
+				{
+					Id = b.Id,
+					Title = b.Title,
+					YearPublished = b.YearPublished,
+					AuthorName = b.Author!.FullName,
+				})
+				.ToListAsync();
+
 			if (book == null) return NotFound("No books in this year");
 
 			return Ok(book);
 		}
 
 		[HttpPost]
-		public async Task<ActionResult<Book>> AddBook(Book newBook)
+		public async Task<ActionResult<Book>> AddBook(CreateBookDto newBook)
 		{
 			if (newBook == null)
 				return BadRequest("Book is realy bad ... =( ");
 
-			 _context.Books.Add(newBook);
+			var author = await _context.Authors.FindAsync(newBook.AuthorId);
+			if(author == null)
+				return BadRequest($"There is no author with id: {newBook.AuthorId}");
+
+
+			var book = new Book
+			{
+				Title = newBook.Title,
+				YearPublished = newBook.YearPublished,
+				AuthorId = newBook.AuthorId
+			};
+
+
+			_context.Books.Add(book);
 			await _context.SaveChangesAsync();
 
-			return CreatedAtAction(nameof(GetBookById), new { id = newBook.Id }, newBook);
+			return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, newBook);
 		}
 
 		[HttpPut("{id}")]
