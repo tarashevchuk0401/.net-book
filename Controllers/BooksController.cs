@@ -19,9 +19,28 @@ namespace FirstApi.Controllers
 		}
 
 		[HttpGet]
-		public async Task<ActionResult<List<Book>>> GetBooks()
+		public async Task<ActionResult<List<Book>>> GetBooks(
+			[FromQuery] int page = 1,
+			[FromQuery] int pageSize = 10,
+			[FromQuery] string? searchTerm = null
+			)
 		{
-			return Ok(await _context.Books.ToListAsync());
+			var toSkip = (page - 1) * pageSize;
+			var query = _context.Books.AsQueryable();
+
+			if (!string.IsNullOrWhiteSpace(searchTerm))
+			{
+				searchTerm = searchTerm.ToLower();
+				query = query.Where(b => b.Title.ToLower().Contains(searchTerm));
+			}
+
+			var books = await query
+				.OrderBy(b => b.Id)
+				.Skip(toSkip)
+				.Take(pageSize)
+				.ToListAsync();
+
+			return Ok(books);
 		}
 
 		[HttpGet("{id}")]
@@ -30,6 +49,16 @@ namespace FirstApi.Controllers
 			var book = await _context.Books.FindAsync(id);
 			if (book == null)
 				return NotFound("There are no book...");
+
+			return Ok(book);
+		}
+
+		[HttpGet("by-year/{year}")]
+		public async Task<ActionResult<List<Book>>> GetBooksByYear(int year)
+		{
+		
+			var book = await  _context.Books.Where(book => book.YearPublished == year).ToListAsync();
+			if (book == null) return NotFound("No books in this year");
 
 			return Ok(book);
 		}
