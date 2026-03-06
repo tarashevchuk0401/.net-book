@@ -1,0 +1,40 @@
+@rootUrl = http://localhost:5147
+
+GET {{rootUrl}}/weatherforecast/
+Accept: application/json
+
+###
+
+
+GET {{rootUrl}}/api/books
+Accept: application/json
+
+###
+
+GET {{rootUrl}}/api/books/1
+Accept: application/json
+
+###
+
+POST {{rootUrl}}/api/books
+Content-Type: application/json
+{
+  
+  "title": "Five Title",
+  "author": "Five",
+  "yearPublished": 2000
+}
+
+###
+
+PUT {{rootUrl}}/api/books/4
+Content-Type: application/json
+{
+  "title": "Four Title",
+  "author": "Five",
+  "yearPublished": 2002
+}
+
+###
+DELETE {{rootUrl}}/api/books/3
+Accept: application/json
