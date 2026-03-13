@@ -13,10 +13,12 @@ namespace FirstApi.Controllers
 	{
 	
 		private readonly FirstAPIContext _context;
+		private readonly IBookService _service;
 
-		public BooksController(FirstAPIContext context)
+
+		public BooksController(IBookService service)
 		{
-			_context = context;
+			_service = service;
 		}
 
 		[HttpGet]
@@ -26,47 +28,19 @@ namespace FirstApi.Controllers
 			[FromQuery] string? searchTerm = null
 			)
 		{
-			var toSkip = (page - 1) * pageSize;
-			var query = _context.Books.Include(b => b.Author).AsQueryable();
 
-			if (!string.IsNullOrWhiteSpace(searchTerm))
-			{
-				searchTerm = searchTerm.ToLower();
-				query = query.Where(b => b.Title.ToLower().Contains(searchTerm));
-			}
-
-			var books = await query
-				.OrderBy(b => b.Id)
-				.Skip(toSkip)
-				.Take(pageSize)
-				.Select(b => new BookDto
-					{
-						Id = b.Id,
-						Title = b.Title,
-						YearPublished = b.YearPublished,
-						AuthorName = b.Author!.FullName
-					})
-				.ToListAsync();
-
+			var books = await _service.GetBooks(page, pageSize, searchTerm);
 			return Ok(books);
+
 		}
 
 		[HttpGet("{id}")]
 		public async Task<ActionResult<BookDto>> GetBookById(int id)
 		{
-			var book = await _context.Books
-				.Include(b => b.Author)
-				.Where(b => b.Id == id)
-				.Select(b => new BookDto
-					{
-						Id = b.Id,
-						Title = b.Title,
-						YearPublished = b.YearPublished,
-						AuthorName = b.Author!.FullName,
-					})
-				.FirstOrDefaultAsync();
+			var book = await _service.GetBookById(id);
 
 			if (book == null) return NotFound("There are no book...");
+
 
 			return Ok(book);
 		}
@@ -75,21 +49,11 @@ namespace FirstApi.Controllers
 		public async Task<ActionResult<List<Book>>> GetBooksByYear(int year)
 		{
 		
-			var book = await  _context.Books
-				.Include (b => b.Author)
-				.Where(book => book.YearPublished == year)
-				.Select(b => new BookDto
-				{
-					Id = b.Id,
-					Title = b.Title,
-					YearPublished = b.YearPublished,
-					AuthorName = b.Author!.FullName,
-				})
-				.ToListAsync();
+			var books = await  _service.GetBooksByYear(year);
 
-			if (book == null) return NotFound("No books in this year");
+			if (books == null) return NotFound("No books in this year");
 
-			return Ok(book);
+			return Ok(books);
 		}
 
 		[HttpPost]
@@ -98,23 +62,16 @@ namespace FirstApi.Controllers
 			if (newBook == null)
 				return BadRequest("Book is realy bad ... =( ");
 
-			var author = await _context.Authors.FindAsync(newBook.AuthorId);
-			if(author == null)
-				return BadRequest($"There is no author with id: {newBook.AuthorId}");
-
-
-			var book = new Book
+			try
 			{
-				Title = newBook.Title,
-				YearPublished = newBook.YearPublished,
-				AuthorId = newBook.AuthorId
-			};
+				var book = await _service.AddBook(newBook);
 
-
-			_context.Books.Add(book);
-			await _context.SaveChangesAsync();
-
-			return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, newBook);
+				return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, book);
+			}
+			catch (KeyNotFoundException ex)
+			{
+				return BadRequest(ex.Message);
+			}
 		}
 
 		[HttpPut("{id}")]

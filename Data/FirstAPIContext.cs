@@ -8,7 +8,6 @@ namespace FirstApi.Data
 		public FirstAPIContext(DbContextOptions<FirstAPIContext> options):base (options) { }
 
 
-
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 		  base.OnModelCreating(modelBuilder);
