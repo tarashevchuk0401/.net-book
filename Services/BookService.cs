@@ -1,6 +1,7 @@
 ﻿using FirstApi.Data;
 using FirstApi.DTOs.Book;
 using FirstApi.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace FirstApi.Services
@@ -42,10 +43,6 @@ namespace FirstApi.Services
 			};
 		}
 
-		public Task<bool> DeleteBook(int id)
-		{
-			throw new NotImplementedException();
-		}
 
 		public async Task<BookDto?> GetBookById(int id)
 		{
@@ -107,9 +104,46 @@ namespace FirstApi.Services
 			return books;
 		}
 
-		public Task<bool> UpdateBook(int id, CreateBookDto dto)
+		public async Task<bool> UpdateBook(int id, CreateBookDto dto)
 		{
-			throw new NotImplementedException();
+			var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == id);
+
+			if (book == null)
+			{
+				return false;
+			}
+
+			var author = await _context.Authors.FindAsync(dto.AuthorId);
+
+			if (author == null)
+			{
+				throw new KeyNotFoundException($"Author with id {dto.AuthorId} does not exist");
+			}
+
+			book.Title = dto.Title;
+			book.YearPublished = dto.YearPublished;
+			book.Author = author;
+
+			await _context.SaveChangesAsync();
+
+			return true;
+
+		}
+
+		public async  Task<bool> DeleteBook(int id)
+		{
+			var book = await _context.Books.FindAsync(id);
+
+			if(book == null)
+			{
+				throw new KeyNotFoundException($"No books with id: {id}");
+			}
+
+			 _context.Books.Remove(book);
+			await _context.SaveChangesAsync();
+
+			return true;
+
 		}
 	}
 }

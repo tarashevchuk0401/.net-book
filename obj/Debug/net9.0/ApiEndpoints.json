@@ -102,7 +102,7 @@
       },
       {
         "Name": "updatedBook",
-        "Type": "FirstApi.Models.Book",
+        "Type": "FirstApi.DTOs.Book.CreateBookDto",
         "IsRequired": true
       }
     ],

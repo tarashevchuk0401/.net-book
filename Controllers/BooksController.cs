@@ -11,7 +11,7 @@ namespace FirstApi.Controllers
 	[ApiController]
 	public class BooksController : ControllerBase
 	{
-	
+
 		private readonly FirstAPIContext _context;
 		private readonly IBookService _service;
 
@@ -31,7 +31,6 @@ namespace FirstApi.Controllers
 
 			var books = await _service.GetBooks(page, pageSize, searchTerm);
 			return Ok(books);
-
 		}
 
 		[HttpGet("{id}")]
@@ -48,8 +47,8 @@ namespace FirstApi.Controllers
 		[HttpGet("by-year/{year}")]
 		public async Task<ActionResult<List<Book>>> GetBooksByYear(int year)
 		{
-		
-			var books = await  _service.GetBooksByYear(year);
+
+			var books = await _service.GetBooksByYear(year);
 
 			if (books == null) return NotFound("No books in this year");
 
@@ -75,33 +74,30 @@ namespace FirstApi.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public async Task<IActionResult> UpdateBook(int id, Book updatedBook)
+		public async Task<IActionResult> UpdateBook(int id, CreateBookDto updatedBook)
 		{
-			var book = await _context.Books.FindAsync(id);
+
+
+			var book = await _service.GetBookById(id);
 			if (book == null)
+			{
 				return NotFound("There are no book...");
 
-			book.Title = updatedBook.Title;
-			book.Author = updatedBook.Author;
-			book.YearPublished = updatedBook.YearPublished;
+			}
 
-			await _context.SaveChangesAsync();
-
-
-			return NoContent();
+			var newBook = await _service.UpdateBook(id, updatedBook);
+			return Ok(newBook);
 		}
 
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteBook(int id)
 		{
-			var book = await _context.Books.FindAsync(id);
-			if (book == null)
-				return NotFound("There are no book...");
 
-			_context.Remove(book);
-			await _context.SaveChangesAsync();
+			await _service.DeleteBook(id);
 
-			return NoContent();
+
+			return Ok();
+
 
 		}
 	}
