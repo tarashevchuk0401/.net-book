@@ -12,13 +12,13 @@ namespace FirstApi.Controllers
 	public class BooksController : ControllerBase
 	{
 
-		private readonly FirstAPIContext _context;
 		private readonly IBookService _service;
+		private readonly ILogger<BooksController> _logger;
 
-
-		public BooksController(IBookService service)
+		public BooksController(IBookService service, ILogger<BooksController> logger)
 		{
 			_service = service;
+			_logger = logger;
 		}
 
 		[HttpGet]
@@ -39,7 +39,6 @@ namespace FirstApi.Controllers
 			var book = await _service.GetBookById(id);
 
 			if (book == null) return NotFound("There are no book...");
-
 
 			return Ok(book);
 		}
@@ -76,8 +75,6 @@ namespace FirstApi.Controllers
 		[HttpPut("{id}")]
 		public async Task<IActionResult> UpdateBook(int id, CreateBookDto updatedBook)
 		{
-
-
 			var book = await _service.GetBookById(id);
 			if (book == null)
 			{
@@ -92,13 +89,9 @@ namespace FirstApi.Controllers
 		[HttpDelete("{id}")]
 		public async Task<IActionResult> DeleteBook(int id)
 		{
-
 			await _service.DeleteBook(id);
-
-
-			return Ok();
-
-
+			_logger.LogInformation("Deleting book with id: {Id}", id);
+			return NoContent();
 		}
 	}
 }

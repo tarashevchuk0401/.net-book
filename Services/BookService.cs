@@ -130,16 +130,16 @@ namespace FirstApi.Services
 
 		}
 
-		public async  Task<bool> DeleteBook(int id)
+		public async Task<bool> DeleteBook(int id)
 		{
 			var book = await _context.Books.FindAsync(id);
 
-			if(book == null)
+			if (book == null)
 			{
 				throw new KeyNotFoundException($"No books with id: {id}");
 			}
 
-			 _context.Books.Remove(book);
+			_context.Books.Remove(book);
 			await _context.SaveChangesAsync();
 
 			return true;

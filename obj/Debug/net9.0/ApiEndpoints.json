@@ -1,5 +1,31 @@
 [
   {
+    "ContainingType": "FirstApi.Controllers.AuthController",
+    "Method": "SignUp",
+    "RelativePath": "api/Auth/signup",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "data",
+        "Type": "FirstApi.DTOs.Auth.SignUpRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.String",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "FirstApi.Controllers.BooksController",
     "Method": "GetBooks",
     "RelativePath": "api/Books",
