@@ -10,13 +10,14 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace FirstApi.Services
 {
-	public class AuthService :IAuthService
+	public class AuthService : IAuthService
 	{
 
 		private FirstAPIContext _context;
-		public AuthService(FirstAPIContext context) { 
+		public AuthService(FirstAPIContext context)
+		{
 			_context = context;
-	
+
 		}
 		public async Task<UserDto> SignUp(SignUpRequestDto dto)
 		{
@@ -35,7 +36,7 @@ namespace FirstApi.Services
 				Email = email,
 			};
 
-			 _context.User.Add(newUser);
+			_context.User.Add(newUser);
 			await _context.SaveChangesAsync();
 
 			return new UserDto
@@ -67,7 +68,7 @@ namespace FirstApi.Services
 			{
 				Id = user.Id,
 				Email = user.Email,
-				FullName =	user.FullName,	
+				FullName = user.FullName,
 			};
 		}
 
@@ -82,10 +83,11 @@ namespace FirstApi.Services
 			{
 				Subject = new ClaimsIdentity(new[]
 				{
-			new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-			new Claim(ClaimTypes.Name, user.FullName),
-			new Claim(ClaimTypes.Email, user.Email)
-		}),
+					new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+					new Claim(ClaimTypes.Name, user.FullName),
+					new Claim(ClaimTypes.Email, user.Email)
+				}
+			),
 				Expires = DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["ExpirationMinutes"])),
 				Issuer = jwtSettings["Issuer"],
 				Audience = jwtSettings["Audience"],

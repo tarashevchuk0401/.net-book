@@ -7,12 +7,13 @@ namespace FirstApi.Controllers
 {
 	[ApiController]
 	[Route("api/[controller]")]
-	public class AuthController :  ControllerBase
+	public class AuthController : ControllerBase
 	{
 		private readonly IAuthService _authService;
 		private readonly IConfiguration _config;
 
-		public AuthController(IAuthService authService, IConfiguration configuration) {
+		public AuthController(IAuthService authService, IConfiguration configuration)
+		{
 			_authService = authService;
 			_config = configuration;
 
@@ -30,7 +31,7 @@ namespace FirstApi.Controllers
 		public async Task<ActionResult<string>> LogIn(LogInRequestDto dto)
 		{
 			var user = await _authService.ValidateUser(dto);
-		
+
 			var token = _authService.GenerateJwtToken(user, _config);
 			return Ok(token);
 		}
