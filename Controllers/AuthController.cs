@@ -1,4 +1,5 @@
 ﻿using FirstApi.DTOs.Auth;
+using FirstApi.Models;
 using FirstApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,9 +15,12 @@ namespace FirstApi.Controllers
 		}
 
 		[HttpPost("signup")]
-		public async Task<string> SignUp(SignUpRequestDto data)
+		public async Task<ActionResult<UserDto>> SignUp(SignUpRequestDto data)
 		{
-			return await _authService.SignUp(data);
+
+			var user = await _authService.SignUp(data);
+
+			return user;
 		}
 	}
 }

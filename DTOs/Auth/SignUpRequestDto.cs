@@ -10,5 +10,12 @@ namespace FirstApi.DTOs.Auth
 		[Required]
 		[MinLength(3)]
 		public string Password { get; set; }
+
+
+		[Required]
+		[MinLength(3)]
+		[EmailAddress]
+		public string Email { get; set; }
+
 	}
 }

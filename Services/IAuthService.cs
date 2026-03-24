@@ -1,11 +1,12 @@
 ﻿using FirstApi.DTOs.Auth;
 using FirstApi.DTOs.Book;
+using FirstApi.Models;
 
 namespace FirstApi.Services
 {
 	public interface IAuthService
 	{
-		Task<string> SignUp(SignUpRequestDto dto);
+		Task<UserDto> SignUp(SignUpRequestDto dto);
 
 	}
 }

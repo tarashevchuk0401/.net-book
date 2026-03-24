@@ -7,7 +7,6 @@ namespace FirstApi.Data
 	{
 		public FirstAPIContext(DbContextOptions<FirstAPIContext> options):base (options) { }
 
-
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 		  base.OnModelCreating(modelBuilder);
@@ -22,6 +21,10 @@ namespace FirstApi.Data
 				new Book { Id = 2, Title = "Second Title", AuthorId = 1, YearPublished = 2003 },
 				new Book { Id = 3, Title = "Third Title", AuthorId = 1, YearPublished = 2004 }
 				);
+
+			modelBuilder.Entity<User>()
+			.HasIndex(u => u.Email)
+			.IsUnique();
 		}
 		public DbSet<Book> Books { get; set; }
 
