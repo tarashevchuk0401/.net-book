@@ -1,6 +1,7 @@
 ﻿using FirstApi.DTOs.Auth;
 using FirstApi.Models;
 using FirstApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FirstApi.Controllers
@@ -20,6 +21,7 @@ namespace FirstApi.Controllers
 		}
 
 		[HttpPost("signup")]
+		[AllowAnonymous]
 		public async Task<ActionResult<UserDto>> SignUp(SignUpRequestDto data)
 		{
 			var user = await _authService.SignUp(data);
@@ -28,12 +30,21 @@ namespace FirstApi.Controllers
 		}
 
 		[HttpPost("login")]
-		public async Task<ActionResult<string>> LogIn(LogInRequestDto dto)
+		[AllowAnonymous]
+		public async Task<ActionResult<string>> LogIn([FromBody] LogInRequestDto dto)
 		{
-			var user = await _authService.ValidateUser(dto);
+			try
+			{
 
-			var token = _authService.GenerateJwtToken(user, _config);
-			return Ok(token);
+				var user = await _authService.ValidateUser(dto);
+
+				var token = _authService.GenerateJwtToken(user, _config);
+				return Ok(token);
+			}
+			catch
+			{
+				return Unauthorized();
+			}
 		}
 	}
 }
