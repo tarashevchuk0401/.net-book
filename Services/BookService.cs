@@ -1,6 +1,7 @@
 ﻿using FirstApi.Data;
 using FirstApi.DTOs.Book;
 using FirstApi.Models;
+using FirstApi.Repository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,10 +11,12 @@ namespace FirstApi.Services
 	{
 
 		private readonly FirstAPIContext _context;
+        private readonly IBookRepository _repository;
 
-		public BookService(FirstAPIContext context)
+		public BookService(FirstAPIContext context,IBookRepository repository )
 		{
 			_context = context;
+            _repository = repository;
 		}
 
 		public async Task<BookDto?> AddBook(CreateBookDto dto)
@@ -46,19 +49,7 @@ namespace FirstApi.Services
 
 		public async Task<BookDto?> GetBookById(int id)
 		{
-			var book = await _context.Books
-			.Include(b => b.Author)
-			.Where(b => b.Id == id)
-			.Select(b => new BookDto
-			{
-				Id = b.Id,
-				Title = b.Title,
-				YearPublished = b.YearPublished,
-				AuthorName = b.Author!.FullName,
-			})
-			.FirstOrDefaultAsync();
-
-			return book;
+            return await _repository.GetBookById(id);
 		}
 
 		public async Task<List<BookDto>> GetBooks(int page, int pageSize, string? searchTerm)

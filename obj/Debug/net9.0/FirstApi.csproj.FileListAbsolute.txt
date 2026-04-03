@@ -165,6 +165,5 @@ C:\Repos\learning\FirstApi\bin\Debug\net9.0\Swashbuckle.AspNetCore.Swagger.dll
 C:\Repos\learning\FirstApi\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerGen.dll
 C:\Repos\learning\FirstApi\bin\Debug\net9.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 C:\Repos\learning\FirstApi\obj\Debug\net9.0\FirstApi.sourcelink.json
-C:\Repos\learning\FirstApi\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 C:\Repos\learning\FirstApi\bin\Debug\net9.0\BCrypt.Net-Next.dll
 C:\Repos\learning\FirstApi\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
